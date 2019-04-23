@@ -42,21 +42,11 @@ def delete():
 
 @app.route('/sms', methods=['POST'])
 def sms():
-
-    resp = MessagingResponse()
-
-    numbers = mongo.db.numbers
-    number = request.form['From']
-    try:
-        numbers.insert({'_id': request.form['From']})
-    except:
-        message_body = 'Number already subscribed'
-        resp.message(message_body)
-        return str(resp)
-   
-    message_body = request.form['Body']
-    resp.message('Hello {}, you said: {}'.format(number, message_body))
-    return str(resp)
+    keyword = request.form['Body']
+    return {
+        'SUBSCRIBE': newUser()
+        'ADD SONGS': initiateSongs()
+    }[keyword]
 
 if __name__ == '__main__':
     app.run(debug=True)
