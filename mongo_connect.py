@@ -42,7 +42,7 @@ def delete():
 
 @app.route('/sms', methods=['POST'])
 def sms():
-    
+
     resp = MessagingResponse()
 
     numbers = mongo.db.numbers
@@ -60,3 +60,7 @@ def sms():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+#start ngrok server: ngrok http 5000
+#start python server: Python mongo_conect.py
+#Twilio app should be up and running after that
