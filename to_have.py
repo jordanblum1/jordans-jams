@@ -1,14 +1,3 @@
-from flask import Flask, request
-from flask_pymongo import PyMongo
-from twilio.twiml.messaging_response import Message, MessagingResponse
-
-
-app = Flask(__name__)
-app.config['MONGO_DBNAME'] = 'connect_to_mongo'
-app.config["MONGO_URI"] = "mongodb+srv://admin:Homeslicer1@cluster0-ftwiq.mongodb.net/test?retryWrites=true"
-mongo = PyMongo(app)
-
-
 #insert
 @app.route('/add')
 def add():
@@ -39,18 +28,3 @@ def delete():
     timothy = user.find_one({'name': 'Timothy'})
     user.remove(timothy)
     return 'Removed Timothy'
-
-@app.route('/sms', methods=['POST'])
-def sms():
-    keyword = request.form['Body']
-    return {
-        'SUBSCRIBE': newUser()
-        'ADD SONGS': initiateSongs()
-    }[keyword]
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-#start ngrok server: ngrok http 5000
-#start python server: Python mongo_conect.py
-#Twilio app should be up and running after that

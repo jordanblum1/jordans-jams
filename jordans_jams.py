@@ -1,4 +1,14 @@
-from flask import session
+
+import os
+from flask import Flask, session
+from flask_pymongo import PyMongo
+from pymongo import MongoClient
+
+def mongoConnect():
+    user = os.environ['MDB_USERNAME']
+    password = os.environ['MDB_PASSWORD']
+    mongoLink = os.environ['MDB_LINK']
+    return MongoClient("mongodb+srv://"+user+":"+password+"@"+mongoLink)
 
 def newUser():
 
