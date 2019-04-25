@@ -3,34 +3,62 @@ import os
 from flask import Flask, session
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
+from twilio.rest import Client
 
+#connect to database that stores both the jams and the phone numbers
 def mongoConnect():
     user = os.environ['MDB_USERNAME']
     password = os.environ['MDB_PASSWORD']
     mongoLink = os.environ['MDB_LINK']
     return MongoClient("mongodb+srv://"+user+":"+password+"@"+mongoLink)
 
+#connect to twilio api & account
+def twilioConnect():
+    twilioSID = os.environ['TWILIO_SID']
+    twilioAuthToken = os.environ['TWILIO_AUTH']
+    return Client(twilioSID, twilioAuthToken)
+    
+def jordansJams():
+    twilioClient = twilioConnect()
+    db = mongoConnect()
+    jamsDB = db['jordans-jams']
+
+    #add logic to send out the jams baby
+
+def is_subscriber(phoneNumber):
+    db = mongoConnect()
+    number = db.find({"Numbers": phoneNumber})
+
+
+    if(number.count() != 0):
+        return True
+    return False
+
 def newUser():
 
-    #Create a response to text back w/ twiml
-    resp = MessagingResponse()
+    db = mongoConnect()
+    numberCollection = db['jordans-jams']['Numbers']
 
-    #open up number database and add phone number
-    numbers = mongo.db.numbers
-    number = request.form['From']
+    numberCollection.insert({'phoneNumber':phoneNumber})
+    return getJams(newUser = true)
 
-    #try to add the number, if it already exists then
-    #send a message back that they are already subscribed
-    #
-    #If not, then add them 
-    try:
-        numbers.insert({'_id': request.form['From']})
-    except:
-        message_body = 'You are already subscribed to Jordan\'s Jams. Look out for new songs to come!'
-        resp.message(message_body)
-        return str(resp)
-    message_body = 'Thanks for subscribing to Jordan\'s Jams. Text TUNES if you would like this weeks currently songs.'
-    resp.message(message_body)
+def removeUser(phoneNumber):
+    db = mongoConnect()
+    numberCollection = db['jordans-jams']
+    db.Numbers.delete_one({'phoneNumber': phoneNumber})
+
+def getJams():
+
+    db = mongoConnect()
+    jams = db['jordans-jams']
+
+
+
+
+
+
+
+
 
 def addSongs():
     #cache the session
@@ -55,12 +83,4 @@ def addSongs():
         if songs.db.dataSize() >= 2:
             message_body = 'There are already songs in the database. Want to overwrite'
             resp.message_body
-        
-
-
-
-def getTunes():
-    #Create response to text the link w/ twiml
-    resp = MessagingResponse()
-
-    #Open up phone and song database
+    
