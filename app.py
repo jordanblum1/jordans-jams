@@ -1,15 +1,9 @@
 import constant, os
 from flask import Flask, request
 from twilio.twiml.messaging_response import Message, MessagingResponse
-
+from jordans_jams import jordansJams, is_subscriber, removeUser, newUser
 
 app = Flask(__name__)
-
-
-app.config['MONGO_DBNAME'] = 'connect_to_mongo'
-app.config["MONGO_URI"] = "mongodb+srv://"+  + ":" +  + "@cluster0-ftwiq.mongodb.net/test?retryWrites=true"
-mongo = PyMongo(app)
-
 
 @app.route('/jordans-jams', methods=['POST', 'GET'])
 def response():
