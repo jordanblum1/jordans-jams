@@ -4,8 +4,8 @@ from twilio.twiml.messaging_response import Message, MessagingResponse
 
 
 app = Flask(__name__)
-app.config['MONGO_DBNAME'] = 'connect_to_mongo'
-app.config["MONGO_URI"] = "mongodb+srv://admin:Homeslicer1@cluster0-ftwiq.mongodb.net/test?retryWrites=true"
+app.config['MONGO_DBNAME'] = '$DB_NAME'
+app.config["MONGO_URI"] = "$MONGO_URI"
 mongo = PyMongo(app)
 
 
