@@ -117,7 +117,7 @@ def addSongs(requestNumber, requestMessage, sessionCount):
         elif songs.count() == 2 and verify(number):
             message_body = "Thanks for sending in your weekly songs!"
             resp.message(message_body)
-            print sessionCount
+            print(sessionCount)
             return str(resp)
         else:
             message_body = "There are 2 songs currently in the database. Would you like to clear? If so, type CLEAR"
