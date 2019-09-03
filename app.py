@@ -1,30 +1,36 @@
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from connect import Connect
 from twilio.twiml.messaging_response import Message, MessagingResponse
-from jordansJams import addSongs
+from jordansJams import addSongs, getJams, clearSongs
 
-
+SECRET_KEY = 'a secret key'
 app = Flask(__name__)
+app.config.from_object(__name__)
 
 mongo = Connect.get_connection()
 numbers = mongo.jordansJams.numbers
 
-@app.route('/sms', methods=['POST'])
+@app.route('/jams', methods=['POST'])
 def sms():
+
+    counter = session.get('counter', 0)
+    counter += 1
+    session['counter'] = counter
+
     resp = MessagingResponse()
     number = request.form['From']
-    inboundMessage = request.form["Body"]
+    inboundMessage = request.form['Body']
 
-    try:
-        numbers.insert_one({'_id': number})
-    except:
-        message_body = 'You are already subscribed to Jordan\'s Jams. Look out for new songs to come!'
-        resp.message(message_body)
-        return str(resp)
+    if inboundMessage == "ADD" and counter >= 1:
+        return addSongs(number, inboundMessage, counter)
+    if inboundMessage == "CLEAR":
+        return clearSongs(number)
+    if inboundMessage == "JAMS":
+        return getJams(number)
 
-    message_body = 'Thanks for subscribing to Jordan\'s Jams. Text TUNES if you would like this weeks currently songs.'
+    message_body = 'Error, that is not a possible entry.'
     resp.message(message_body)
     return str(resp)
 
