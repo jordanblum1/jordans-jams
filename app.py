@@ -12,6 +12,10 @@ app.config.from_object(__name__)
 mongo = Connect.get_connection()
 numbers = mongo.jordansJams.numbers
 
+@app.route('/')
+def index():
+    return "Up and Running!!"
+
 @app.route('/jams', methods=['POST'])
 def sms():
 
