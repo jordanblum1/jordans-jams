@@ -10,9 +10,9 @@ from twilio.rest import Client
 
 #add env vars to Heroku
 def twilioConnect():
-    #twilioSID = os.environ['TWILIO_SID']
-    #twilioAuthToken = os.environ['TWILIO_AUTH']
-    return Client('AC0ed1eb8b97d3465050670f36b2f3e03f', '343e9844b3ad99c3eb22fca94bf57ba7')
+    twilioSID = os.environ['TWILIO_SID']
+    twilioAuthToken = os.environ['TWILIO_AUTH']
+    return Client(twilioSID, twilioAuthToken)
 
 def is_subscriber(phoneNumber):
     db = Connect.get_connection().numbers
@@ -58,7 +58,9 @@ def getJams(phoneNumber):
 def verify(requestNumber):
     #verify if this is an Admin phone number
     #mask this later
-    if requestNumber == '+18478484251':
+    adminNum = os.environ['ADMIN_NUM']
+	
+    if requestNumber == adminNum:
         return True
     else:
         message_body = "Sorry, you are not authorized to add songs."
