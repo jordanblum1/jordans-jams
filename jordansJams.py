@@ -103,7 +103,7 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     #add song to database
     if "open.spotify.com" in requestMessage and sessionCount >= 1:
         songs.insert_one({"songLink":requestMessage})
-        print "Added song"
+        print("Added song")
     
     if sessionCount >= 1 and verify(number):
         if songs.count() == 0:
