@@ -37,7 +37,7 @@ def newUser(phoneNumber):
     twilioClient = twilioConnect()
     welcome = "Welcome to Jordan's Jams! Here you'll find Jordan's newest tunes every week. Everyone Wednesday you will get the songs Jordan has been jamming out to over the past 7 days. Here is what he's been listening to this week."
     twilioClient.messages.create(
-            to=number,
+            to=phoneNumber,
             from_="+14152124859",
             body=welcome)
     return getJams(phoneNumber)
@@ -58,7 +58,7 @@ def getJams(phoneNumber):
     twilioClient = twilioConnect()
 
     songs = db.songs.find()
-    intro = "Here are the newest jams for this week:"
+    intro = "This weeks newest jams are:"
 
     twilioClient.messages.create(
             to=phoneNumber,
