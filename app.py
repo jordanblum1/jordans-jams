@@ -3,7 +3,7 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from connect import Connect
 from twilio.twiml.messaging_response import Message, MessagingResponse
-from jordansJams import addSongs, getJams, clearSongs
+from jordansJams import verify, addSongs, getJams, clearSongs, is_subscriber, newUser, removeUser, twilioConnect, default_message
 
 SECRET_KEY = 'a secret key'
 app = Flask(__name__)
@@ -19,20 +19,29 @@ def index():
 @app.route('/jams', methods=['POST'])
 def sms():
 
-    counter = session.get('counter', 0)
-    counter += 1
-    session['counter'] = counter
-
     resp = MessagingResponse()
     number = request.form['From']
     inboundMessage = request.form['Body']
 
-    if inboundMessage == "ADD" and counter >= 1:
-        return addSongs(number, inboundMessage, counter)
+    counter = session.get('counter', 0)
+    counter += 1
+    session['counter'] = counter
+
+    exit_words = ["STOP", "END", "UNSUBSCRIBE", "REMOVE"]
+    if inboundMessage.upper() in exit_words:
+        return removeUser(number)
+
     if inboundMessage == "CLEAR":
+        session['counter'] = 0
         return clearSongs(number)
     if inboundMessage == "JAMS":
         return getJams(number)
+    if (inboundMessage == "ADD") or (counter >= 1 and "open.spotify.com") and verify(number):
+        return addSongs(number, inboundMessage, counter)
+    if not is_subscriber(number):
+        return newUser(number)
+    if is_subscriber(number):
+        return default_message(number)
 
     message_body = 'Error, that is not a possible entry.'
     resp.message(message_body)
