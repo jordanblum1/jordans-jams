@@ -136,7 +136,9 @@ def addSongs(requestNumber, requestMessage, sessionCount):
         uri = getURI(requestMessage)
         parsedTrack = parseTrack(uri, requestMessage)
         songs.insert_one(parsedTrack)
+        justSent = True
     
+
     if sessionCount >= 1 and verify(number):
         if songs.count() == 0:
             message_body = "Please send in your 2 songs for the week."
@@ -146,8 +148,9 @@ def addSongs(requestNumber, requestMessage, sessionCount):
             message_body = "Please send in your 2nd song."
             resp.message(message_body)
             return str(resp)
-        elif songs.count() == 2 and verify(number):
+        elif songs.count() == 2 and verify(number) and justSent:
             message_body = "Thanks for sending in your weekly songs!"
+            justSent = False
             resp.message(message_body)
             return str(resp)
         else:
