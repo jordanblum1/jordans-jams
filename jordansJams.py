@@ -124,6 +124,7 @@ def addSongs(requestNumber, requestMessage, sessionCount):
 
     #Create response to text back w/ twiml
     resp = MessagingResponse()
+    justSent = False
 
     #check if song already exists in database
     if "open.spotify.com" in requestMessage and songs.find_one({"uri":getURI(requestMessage)}) != None:
