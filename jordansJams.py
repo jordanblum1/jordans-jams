@@ -58,6 +58,18 @@ def getJams(phoneNumber):
     twilioClient = twilioConnect()
 
     songs = db.songs.find()
+
+    jamCount = songs.count()
+
+    if jamCount < 1:
+        sorry = "Sorry, unfortunately jams have not been added for this week. Check back later!"
+        twilioClient.messages.create(
+            to=phoneNumber,
+            from_="+14152124859",
+            body=sorry)
+        return "Songs requested. No available. Please add more songs"
+
+
     intro = "This weeks newest jams are:"
 
     twilioClient.messages.create(
