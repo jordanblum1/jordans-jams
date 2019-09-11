@@ -37,7 +37,7 @@ def newUser(phoneNumber):
     twilioClient = twilioConnect()
     welcome = "Welcome to Jordan's Jams! Here you'll find Jordan's newest tunes every week. Everyone Wednesday you will get the songs Jordan has been jamming out to over the past 7 days. Here is what he's been listening to this week."
     twilioClient.messages.create(
-            to=number,
+            to=phoneNumber,
             from_="+14152124859",
             body=welcome)
     return getJams(phoneNumber)
@@ -58,7 +58,19 @@ def getJams(phoneNumber):
     twilioClient = twilioConnect()
 
     songs = db.songs.find()
-    intro = "Here are the newest jams for this week:"
+
+    jamCount = songs.count()
+
+    if jamCount < 1:
+        sorry = "Sorry, unfortunately jams have not been added for this week. Check back later!"
+        twilioClient.messages.create(
+            to=phoneNumber,
+            from_="+14152124859",
+            body=sorry)
+        return "Songs requested. No available. Please add more songs"
+
+
+    intro = "This weeks newest jams are:"
 
     twilioClient.messages.create(
             to=phoneNumber,
@@ -124,6 +136,7 @@ def addSongs(requestNumber, requestMessage, sessionCount):
 
     #Create response to text back w/ twiml
     resp = MessagingResponse()
+    justSent = False
 
     #check if song already exists in database
     if "open.spotify.com" in requestMessage and songs.find_one({"uri":getURI(requestMessage)}) != None:
@@ -136,7 +149,9 @@ def addSongs(requestNumber, requestMessage, sessionCount):
         uri = getURI(requestMessage)
         parsedTrack = parseTrack(uri, requestMessage)
         songs.insert_one(parsedTrack)
+        justSent = True
     
+
     if sessionCount >= 1 and verify(number):
         if songs.count() == 0:
             message_body = "Please send in your 2 songs for the week."
@@ -146,8 +161,9 @@ def addSongs(requestNumber, requestMessage, sessionCount):
             message_body = "Please send in your 2nd song."
             resp.message(message_body)
             return str(resp)
-        elif songs.count() == 2 and verify(number):
+        elif songs.count() == 2 and verify(number) and justSent:
             message_body = "Thanks for sending in your weekly songs!"
+            justSent = False
             resp.message(message_body)
             return str(resp)
         else:
