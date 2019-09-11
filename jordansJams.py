@@ -119,7 +119,7 @@ def clearSongs(requestNumber):
     resp = MessagingResponse()
 
     #Clear all songs in database if more than 2 songs & message is 'clear'
-    if songs.count >= 2 and verify(requestNumber):
+    if songs.count() >= 2 and verify(requestNumber):
         songs.remove({ })
         message_body = "All songs have been cleared."
         resp.message(message_body)
