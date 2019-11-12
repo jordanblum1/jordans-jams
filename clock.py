@@ -8,9 +8,10 @@ mongo = MongoClient()
 numbers = mongo.jordansJams.numbers
 
 
-@sched.scheduled_job('cron', hour=21, minute=25, timezone='US/Pacific')
+@sched.scheduled_job('cron', day_of_week='mon', hour=22, timezone="US/Pacific")
 def notifyJ():
     notifyJordan()
 
 
+    
 sched.start()
