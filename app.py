@@ -14,7 +14,7 @@ numbers = mongo.jordansJams.numbers
 
 @app.route('/')
 def index():
-    return "Up and Running!!"
+    return ("<html><head>Welcome to Jordans Jams</head><iframe src=\"https://open.spotify.com/embed/playlist/6MfEs3eSEY27X5QOzioqW8\" width=\"300\" height=\"380\" frameborder=\"0\" allowtransparency=\"true\" allow=\"encrypted-media\"></iframe></html>")
 
 @app.route('/jams', methods=['POST'])
 def sms():
