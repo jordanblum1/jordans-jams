@@ -1,0 +1,30 @@
+body, html {
+    height: 100%;
+  }
+
+  iframe {
+    margin: auto;
+    width: 60%;
+    display: block;
+  }
+
+.header {
+    padding: 50px;
+    font-size: 48px;
+    color: white;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    text-align: center;
+  }
+
+.bg {
+    /* The image used */
+    background-image: url("jamsBackground.jpg");
+  
+    /* Full height */
+    height: 90%;
+  
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }

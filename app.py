@@ -1,4 +1,4 @@
-from flask import Flask, request, session
+from flask import Flask, request, session, render_template
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from connect import Connect
@@ -14,7 +14,7 @@ numbers = mongo.jordansJams.numbers
 
 @app.route('/')
 def index():
-    return ("<html><head>Welcome to Jordans Jams</head><iframe src=\"https://open.spotify.com/embed/playlist/6MfEs3eSEY27X5QOzioqW8\" width=\"300\" height=\"380\" frameborder=\"0\" allowtransparency=\"true\" allow=\"encrypted-media\"></iframe></html>")
+    return render_template('jordansJams.html')
 
 @app.route('/jams', methods=['POST'])
 def sms():
