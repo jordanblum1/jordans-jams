@@ -173,3 +173,9 @@ def addSongs(requestNumber, requestMessage, sessionCount):
 
     resp.message("Error adding weekly songs. Please check for maintenance.")
     return str(resp)
+
+def notifyJordan():
+    twilioClient = twilioConnect()
+    adminNum = os.environ['ADMIN_NUM']
+    message_body = "Hey Jordan! It's time to submit your weekly jams."
+    twilioClient.messages.create(to=adminNum, from_="+14152124859", body=message_body)

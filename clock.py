@@ -1,17 +1,16 @@
-from jordansJams import getJams
+from jordansJams import getJams, notifyJordan
 from pymongo import MongoClient
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-sched = BlockingScheduler()
+sched = BlockingScheduler(timezone='US/Pacific')
 
 mongo = MongoClient()
 numbers = mongo.jordansJams.numbers
 
-#@sched.scheduled_job('cron', hour=10, timezone='US/Pacific')
-def send_text():
-    for number in numbers:
-        getJams(numbers)
-    
+
+@sched.scheduled_job('cron', hour=21, minute=20, timezone='US/Pacific')
+def notifyJ():
+    notifyJordan()
 
 
 sched.start()
