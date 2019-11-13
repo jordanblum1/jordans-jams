@@ -35,7 +35,7 @@ def newUser(phoneNumber):
     numbers = db.jordansJams.numbers
     numbers.insert_one({'_id':phoneNumber})
     twilioClient = twilioConnect()
-    welcome = "Welcome to Jordan's Jams! Here you'll find Jordan's newest tunes every week. Everyone Wednesday you will get the songs Jordan has been jamming out to over the past 7 days. Here is what he's been listening to this week."
+    welcome = "Welcome to Jordan's Jams! Here you'll find Jordan's newest tunes every week. Every Wednesday you will get the songs Jordan has been jamming out to over the past 7 days. Here is what he's been listening to this week."
     twilioClient.messages.create(
             to=phoneNumber,
             from_="+14152124859",
