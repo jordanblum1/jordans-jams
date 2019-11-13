@@ -21,7 +21,7 @@ def sms():
 
     resp = MessagingResponse()
     number = request.form['From']
-    inboundMessage = request.form['Body']
+    inboundMessage = (request.form['Body']).upper()
 
     counter = session.get('counter', 0)
     counter += 1
