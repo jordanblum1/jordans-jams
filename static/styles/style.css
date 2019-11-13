@@ -11,14 +11,14 @@ body, html {
 .header {
     padding: 50px;
     font-size: 48px;
-    color: black;
+    color: white;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     text-align: center;
   }
 
 .bg {
     /* The image used */
-    background: linear-gradient(120deg, #1DB945, #191414);
+    background:  url("{{ url_for('static',filename='templates/jamsBackground.jpg') }}");
   
     /* Full height */
     height: 90%;
