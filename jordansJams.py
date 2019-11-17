@@ -70,14 +70,12 @@ def getJams(phoneNumber):
         return "Songs requested. No available. Please add more songs"
 
 
-    intro = "This weeks newest jams are:"
+    intro = "Good morning! Jordan's top 2 jams for the week are:"
 
     twilioClient.messages.create(
             to=phoneNumber,
             from_="+14152124859",
             body=intro)
-
-    time.sleep(1)
 
     for song in songs:
         track = song['track']
