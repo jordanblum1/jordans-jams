@@ -17,6 +17,9 @@ function addNumber() {
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST", link, true);
     xhttp.send();
+
+    document.getElementById('phone').value = " "
+    alert("Thank's for signing up for Jordan's Jams. Hope you enjoy!")
 }
 
 
