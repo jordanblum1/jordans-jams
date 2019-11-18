@@ -16,6 +16,10 @@ numbers = mongo.jordansJams.numbers
 def index():
     return render_template('jordansJams.html')
 
+@app.route('/addFromWeb/<number>', methods = ['POST'])
+def webAdd(number):
+    return newUser(number)
+
 @app.route('/jams', methods=['POST'])
 def sms():
 
