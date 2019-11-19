@@ -18,7 +18,10 @@ def index():
 
 @app.route('/addFromWeb/<number>', methods = ['POST'])
 def webAdd(number):
-    return newUser(number)
+    if is_subscriber(number):
+        return ("Error: Number already subscribed to Jordan's Jams")
+    else:
+        return newUser(number)
 
 @app.route('/jams', methods=['POST'])
 def sms():

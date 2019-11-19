@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" >
 <script  src="{{ url_for('static',filename='styles/script.js') }}"></script>
+
+<link href='https://fonts.googleapis.com/css?family=Alatsi' rel='stylesheet'>
+
 <head>
   <meta charset="UTF-8">
   <title>Jordan's Jams</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
 </head>
 <body>
-<!-- partial:index.partial.html -->
+
 <header>
 	<video autoplay playsinline muted loop preload poster="https://media.giphy.com/media/3Z15bxH9KJtowhckDc/giphy.gif">
 	</video>
@@ -23,13 +26,12 @@
   </svg>
 </header>
 
-<form>
+<div class="sendJams">
         <input id="phone" placeholder="888-888-8888" title="XXX-XXX-XXXX" required pattern="[0-9]{3}[0-9]{3}[0-9]{4}">
-        <input onclick="addNumber()" id="button" type="button" value="Get Jams">
-</form>
+        <input id="phoneInput" class="button-secondary pure-button" onclick="addNumber()" type="button" value="Get Jams">
+</div>
 
 <iframe src="https://open.spotify.com/embed/playlist/6MfEs3eSEY27X5QOzioqW8" width="500" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-<!-- partial -->
 
 </body>
 </html>
