@@ -17,7 +17,9 @@ function addNumber() {
     var phoneNumber = document.getElementById('phone').value;
 
     if(isValid(phoneNumber) && phoneNumber.length >= 10){
-        var fullNum = "+1" + phoneNumber;
+        number = phoneNumber.replace(/\D/g, "");
+
+        var fullNum = "+1" + number;
 
         link += String(fullNum);
 
@@ -25,8 +27,8 @@ function addNumber() {
         xhttp.open("POST", link, true);
         xhttp.send();
 
-        document.getElementById('phone').value = "Success!";
-        alert("Thank's for signing up for Jordan's Jams. Hope you enjoy!");
+        document.getElementById('phone').value = "";
+        alert("You have successfully signed up for Jordan's Jams");
     }
     else{
         alert("The phone number you have entered is invalid. Please try again.");
