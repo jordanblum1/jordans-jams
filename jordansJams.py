@@ -122,6 +122,10 @@ def clearSongs(requestNumber):
         message_body = "All songs have been cleared."
         resp.message(message_body)
         return str(resp)
+    else:
+        message_body = "Songs have already been cleared."
+        resp.message(message_body)
+        return str(resp)
     
 
 def addSongs(requestNumber, requestMessage):
