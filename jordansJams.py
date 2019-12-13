@@ -124,7 +124,7 @@ def clearSongs(requestNumber):
         return str(resp)
     
 
-def addSongs(requestNumber, requestMessage, sessionCount):
+def addSongs(requestNumber, requestMessage):
 
     number = requestNumber
 
@@ -143,14 +143,14 @@ def addSongs(requestNumber, requestMessage, sessionCount):
         return str(resp)
         
     #add song to database
-    if "open.spotify.com" in requestMessage and sessionCount >= 1:
+    if "open.spotify.com" in requestMessage:
         uri = getURI(requestMessage)
         parsedTrack = parseTrack(uri, requestMessage)
         songs.insert_one(parsedTrack)
         justSent = True
     
 
-    if sessionCount >= 1 and verify(number):
+    if verify(number):
         if songs.count() == 0:
             message_body = "Please send in your 2 songs for the week."
             resp.message(message_body)
