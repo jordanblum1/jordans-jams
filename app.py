@@ -30,17 +30,22 @@ def sms():
     number = request.form['From']
     inboundMessage = (request.form['Body']).upper()
 
+    counter = session.get('counter', 0)
+    counter += 1
+    session['counter'] = counter
+
     exit_words = ["STOP", "END", "UNSUBSCRIBE", "REMOVE"]
     if inboundMessage.upper() in exit_words:
         return removeUser(number)
 
     if inboundMessage == "CLEAR":
+        session['counter'] = 0
         return clearSongs(number)
     if inboundMessage == "JAMS":
         return getJams(number)
-    if (inboundMessage == "ADD") or  "open.spotify.com" in inboundMessage:
+    if (inboundMessage == "ADD") or (counter >= 1 and "open.spotify.com" in inboundMessage):
         if verify(number):
-            return addSongs(number, inboundMessage)
+            return addSongs(number, inboundMessage, counter)
     if not is_subscriber(number):
         return newUser(number)
     if is_subscriber(number):
