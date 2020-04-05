@@ -45,7 +45,7 @@ def sms():
         return clearSongs(number)
     if inboundMessage == "JAMS":
         return getJams(number)
-    if (inboundMessage == "ADD") or (counter >= 1 and "open.spotify.com" in inboundMessage):
+    if (inboundMessage == "ADD") or (counter >= 1 and "open.spotify.com" in inboundMessage.lower()):
         if verify(number):
             return addSongs(number, inboundMessage, counter)
     if not is_subscriber(number):
