@@ -35,6 +35,7 @@ def sms():
     session['counter'] = counter
 
     print(inboundMessage)
+    print(counter)
 
     exit_words = ["STOP", "END", "UNSUBSCRIBE", "REMOVE"]
     if inboundMessage.upper() in exit_words:
@@ -47,7 +48,7 @@ def sms():
         return getJams(number)
     if (inboundMessage == "ADD") or (counter >= 1 and "open.spotify.com" in inboundMessage.lower()):
         if verify(number):
-            return addSongs(number, inboundMessage, counter)
+            return addSongs(number, inboundMessage.lower(), counter)
     if not is_subscriber(number):
         return newUser(number)
     if is_subscriber(number):
