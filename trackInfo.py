@@ -1,22 +1,18 @@
 import os
 import spotipy
 import spotipy.util as util
+from spotipy.oauth2 import SpotifyClientCredentials
 
 
-#Authorization of Spotify Credentials
-token = util.oauth2.SpotifyClientCredentials(client_id=os.environ['SPOT_ID'], client_secret=os.environ['SPOT_SECRET'])
-cache_token = token.get_access_token()
-spotify = spotipy.Spotify(cache_token)
+def getTrackInfo(url):
+    #Authorization of Spotify Credentials
+    client_credentials_manager = SpotifyClientCredentials()
+    spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-def getURI(spotifyURL):
-    return ("spotify:track:" + spotifyURL.replace('https://', '').split('/')[2].split('?')[0])
-
-def getTrackInfo(uri):
-    return spotify.track(uri)
-
-def parseTrack(uri, url):
+    #Connect to Spotify
     spotifyLink = url
-    track = getTrackInfo(uri)
+    track = spotify.track(url)
     trackName =  track['name']
     artistName = track['artists'][0]['name']
+    uri = track['uri']
     return {"uri":uri, "track":trackName, "artist":artistName, "link":spotifyLink}

@@ -7,7 +7,7 @@ from connect import Connect
 from twilio.twiml.messaging_response import Message, MessagingResponse
 from twilio.base import exceptions
 from twilio.rest import Client
-from trackInfo import getURI, parseTrack
+from trackInfo import getTrackInfo
 
 #add env vars to Heroku
 def twilioConnect():
@@ -128,7 +128,7 @@ def clearSongs(requestNumber):
         return str(resp)
     
 
-def addSongs(requestNumber, requestMessage):
+def addSongs(requestNumber, requestMessage, sessionCount):
 
     number = requestNumber
 
@@ -141,20 +141,24 @@ def addSongs(requestNumber, requestMessage):
     justSent = False
 
     #check if song already exists in database
-    if "open.spotify.com" in requestMessage and songs.find_one({"uri":getURI(requestMessage)}) != None:
-        message_body = "That song has already been added. Please add another."
-        resp.message(message_body)
-        return str(resp)
+    if "open.spotify.com" in requestMessage:
+        track = getTrackInfo(requestMessage)
+        if songs.find_one({"uri":track['uri']}) != None:
+            message_body = "That song has already been added. Please add another."
+            resp.message(message_body)
+            return str(resp)
         
     #add song to database
-    if "open.spotify.com" in requestMessage:
-        uri = getURI(requestMessage)
-        parsedTrack = parseTrack(uri, requestMessage)
+    if "open.spotify.com" in requestMessage and sessionCount >= 1:
+        print("Adding Song")
+        parsedTrack = getTrackInfo(requestMessage)
+        print("parsed track looks like {}".format(parsedTrack))
         songs.insert_one(parsedTrack)
         justSent = True
+        print("Track should be added.")
     
 
-    if verify(number):
+    if sessionCount >= 1 and verify(number):
         if songs.count() == 0:
             message_body = "Please send in your 2 songs for the week."
             resp.message(message_body)
