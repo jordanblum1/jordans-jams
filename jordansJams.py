@@ -133,6 +133,8 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     number = requestNumber
 
     db = Connect.get_connection()
+    if db:
+        print("connectedToDatabse")
     numbers = db.jordansJams.numbers
     songs = db.jordansJams.songs
 
