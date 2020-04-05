@@ -150,10 +150,14 @@ def addSongs(requestNumber, requestMessage, sessionCount):
         
     #add song to database
     if "open.spotify.com" in requestMessage and sessionCount >= 1:
+        print("Adding Song")
         uri = getURI(requestMessage)
+        print(uri)
         parsedTrack = parseTrack(uri, requestMessage)
+        print("parsed track looks like {}".format(parsedTrack))
         songs.insert_one(parsedTrack)
         justSent = True
+        print("Track should be added.")
     
 
     if sessionCount >= 1 and verify(number):
