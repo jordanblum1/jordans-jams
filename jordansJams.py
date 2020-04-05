@@ -150,13 +150,9 @@ def addSongs(requestNumber, requestMessage, sessionCount):
         
     #add song to database
     if "open.spotify.com" in requestMessage and sessionCount >= 1:
-        print("Adding Song")
         parsedTrack = getTrackInfo(requestMessage)
-        print("parsed track looks like {}".format(parsedTrack))
         songs.insert_one(parsedTrack)
         justSent = True
-        print("Track should be added.")
-    
 
     if sessionCount >= 1 and verify(number):
         if songs.count() == 0:
@@ -181,6 +177,7 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     return str(resp)
 
 def notifyJordan():
+    print("Notifying Jordan -- Weekly Jams request should be sent shortly.")
     twilioClient = twilioConnect()
     adminNum = os.environ['ADMIN_NUM']
     message_body = "Hey Jordan! It's time to submit your weekly jams."

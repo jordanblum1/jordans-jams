@@ -15,7 +15,7 @@ def notifySubscribers():
 
 sched = BlockingScheduler(timezone='US/Pacific')
 
-sched.add_job(notifyJ, 'cron', day_of_week='tue', hour=18, timezone="US/Pacific")
+sched.add_job(notifyJ, 'cron', day_of_week='sun', hour=18, timezone="US/Pacific")
 
 sched.add_job(notifySubscribers, 'cron', day_of_week='wed', hour=10, timezone="US/Pacific")
 
