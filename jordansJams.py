@@ -7,7 +7,7 @@ from connect import Connect
 from twilio.twiml.messaging_response import Message, MessagingResponse
 from twilio.base import exceptions
 from twilio.rest import Client
-from trackInfo import getURI, parseTrack
+from trackInfo import getTrackInfo
 
 #add env vars to Heroku
 def twilioConnect():
@@ -133,8 +133,6 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     number = requestNumber
 
     db = Connect.get_connection()
-    if db:
-        print("connectedToDatabse")
     numbers = db.jordansJams.numbers
     songs = db.jordansJams.songs
 
@@ -151,9 +149,7 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     #add song to database
     if "open.spotify.com" in requestMessage and sessionCount >= 1:
         print("Adding Song")
-        uri = getURI(requestMessage)
-        print(uri)
-        parsedTrack = parseTrack(uri, requestMessage)
+        parsedTrack = parseTrack(requestMessage)
         print("parsed track looks like {}".format(parsedTrack))
         songs.insert_one(parsedTrack)
         justSent = True
