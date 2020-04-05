@@ -1,13 +1,12 @@
 import os
 import spotipy
-import spotipy.util as util
+from spotipy.oauth2 import SpotifyClientCredentials
 
 
 def getTrackInfo(url):
     #Authorization of Spotify Credentials
-    token = util.oauth2.SpotifyClientCredentials(client_id=os.environ['SPOT_ID'], client_secret=os.environ['SPOT_SECRET'])
-    cache_token = token.get_access_token()
-    spotify = spotipy.Spotify(cache_token)
+    client_credentials_manager = SpotifyClientCredentials()
+    spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     #Connect to Spotify
     spotifyLink = url
