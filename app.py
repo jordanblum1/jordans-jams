@@ -34,6 +34,8 @@ def sms():
     counter += 1
     session['counter'] = counter
 
+    print(inboundMessage)
+
     exit_words = ["STOP", "END", "UNSUBSCRIBE", "REMOVE"]
     if inboundMessage.upper() in exit_words:
         return removeUser(number)
