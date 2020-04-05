@@ -141,10 +141,12 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     justSent = False
 
     #check if song already exists in database
-    if "open.spotify.com" in requestMessage and songs.find_one({"uri":getURI(requestMessage)}) != None:
-        message_body = "That song has already been added. Please add another."
-        resp.message(message_body)
-        return str(resp)
+    if "open.spotify.com" in requestMessage:
+        track = parseTrack(requestMessage)
+        if songs.find_one({"uri":track['uri']}) != None:
+            message_body = "That song has already been added. Please add another."
+            resp.message(message_body)
+            return str(resp)
         
     #add song to database
     if "open.spotify.com" in requestMessage and sessionCount >= 1:
