@@ -162,9 +162,10 @@ def add_songs(request_number, request_message, session_count):
     if "open.spotify.com" in request_message and session_count >= 1:
         parsed_track = getTrackInfo(request_message)
         songs.insert_one(parsed_track)
-        uri = parsed_track['uri']
+        track_uri = "spotify:track:" + parsed_track['uri']
         sp = spotify()
-        sp.user_playlist_add_tracks(playlist_id='6MfEs3eSEY27X5QOzioqW8', items=["spotify:track:{}".format(uri)], position=None)
+        print(track_uri)
+        sp.user_playlist_add_tracks(playlist_id='6MfEs3eSEY27X5QOzioqW8', items=[track_uri], position=None)
         just_sent = True
 
     if session_count >= 1 and verify(number):
