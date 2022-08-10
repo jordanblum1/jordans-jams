@@ -1,9 +1,10 @@
+from os import remove
 from flask import Flask, request, session, render_template
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from connect import Connect
 from twilio.twiml.messaging_response import Message, MessagingResponse
-from jordansJams import verify, addSongs, getJams, clearSongs, is_subscriber, new_user, removeUser, twilioConnect, default_message
+from jordansJams import verify, add_songs, get_jams, clear_songs, is_subscriber, new_user, remove_user, twilio_connect, default_message
 
 SECRET_KEY = 'a secret key'
 app = Flask(__name__)
@@ -45,16 +46,16 @@ def sms():
 
     exit_words = ["STOP", "END", "UNSUBSCRIBE", "REMOVE"]
     if inbound_message.upper() in exit_words:
-        return removeUser(number)
+        return remove_user(number)
 
     if inbound_message == "CLEAR":
         session['counter'] = 0
-        return clearSongs(number)
+        return clear_songs(number)
     if inbound_message == "JAMS":
-        return getJams(number)
+        return get_jams(number)
     if (inbound_message == "ADD") or (counter >= 1 and "open.spotify.com" in inbound_message.lower()):
         if verify(number):
-            return addSongs(number, inbound_message, counter)
+            return add_songs(number, inbound_message, counter)
     if not is_subscriber(number):
         return new_user(number)
     if is_subscriber(number):
