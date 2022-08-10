@@ -1,6 +1,7 @@
 from jordansJams import notifyJordan, getJams
 from apscheduler.schedulers.blocking import BlockingScheduler
 from connect import Connect
+import time
 
 def notifyJ():
     notifyJordan()
@@ -10,6 +11,7 @@ def notifySubscribers():
     for number in numbers.find():
         sendTo = number['_id']
         getJams(sendTo)
+        time.sleep(1)
 
     
 

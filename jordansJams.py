@@ -8,12 +8,19 @@ from twilio.twiml.messaging_response import Message, MessagingResponse
 from twilio.base import exceptions
 from twilio.rest import Client
 from trackInfo import getTrackInfo
+import spotipy
+import spotipy.util as util
+from spotipy.oauth2 import SpotifyClientCredentials
 
 #add env vars to Heroku
 def twilioConnect():
     twilioSID = os.environ['TWILIO_SID']
     twilioAuthToken = os.environ['TWILIO_AUTH']
     return Client(twilioSID, twilioAuthToken)
+
+def spotify():
+    client_credentials_manager = SpotifyClientCredentials()
+    return spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 def default_message(number):
     twilioClient = twilioConnect()
@@ -90,7 +97,7 @@ def getJams(phoneNumber):
             to=phoneNumber,
             from_="+14152124859",
             body=link)
-        time.sleep(.5)
+        time.sleep(2)
 
     return "Songs successfully sent."
 
@@ -119,11 +126,11 @@ def clearSongs(requestNumber):
     #Clear all songs in database if more than 2 songs & message is 'clear'
     if songs.count() >= 2 and verify(requestNumber):
         songs.remove({ })
-        message_body = "All songs have been cleared."
+        message_body = "All jams have been cleared."
         resp.message(message_body)
         return str(resp)
     else:
-        message_body = "Songs have already been cleared."
+        message_body = "Jams have already been cleared."
         resp.message(message_body)
         return str(resp)
     
@@ -152,6 +159,8 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     if "open.spotify.com" in requestMessage and sessionCount >= 1:
         parsedTrack = getTrackInfo(requestMessage)
         songs.insert_one(parsedTrack)
+        sp = spotify()
+        sp.user_playlist_add_tracks('1226013786', playlist_id='6MfEs3eSEY27X5QOzioqW8', tracks="spotify:track:{0}".format(parsedTrack['uri']))
         justSent = True
 
     if sessionCount >= 1 and verify(number):
@@ -182,3 +191,4 @@ def notifyJordan():
     adminNum = os.environ['ADMIN_NUM']
     message_body = "Hey Jordan! It's time to submit your weekly jams."
     twilioClient.messages.create(to=adminNum, from_="+14152124859", body=message_body)
+    clearSongs(adminNum)
