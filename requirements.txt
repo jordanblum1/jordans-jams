@@ -5,3 +5,4 @@ twilio==6.25.0
 gunicorn==19.9.0
 APScheduler == 3.5.0
 spotipy==2.9.0
+python==python-3.10.6
