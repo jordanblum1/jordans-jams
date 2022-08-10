@@ -163,7 +163,7 @@ def add_songs(request_number, request_message, session_count):
         parsed_track = getTrackInfo(request_message)
         songs.insert_one(parsed_track)
         sp = spotify()
-        sp.user_playlist_add_tracks('6MfEs3eSEY27X5QOzioqW8', parsed_track['uri'], None)
+        sp.user_playlist_add_tracks('6MfEs3eSEY27X5QOzioqW8', parsed_track['uri'])
         just_sent = True
 
     if session_count >= 1 and verify(number):
