@@ -2,18 +2,18 @@
 import time
 from apscheduler.schedulers.blocking import BlockingScheduler
 from connect import Connect
-from jordansJams import notifyJordan, getJams
+from jordansJams import notify_jordan, get_jams
 
 def notifyj():
     '''sends notification to jordan to send in jams'''
-    notifyJordan()
+    notify_jordan()
 
 def notify_subscribers():
     '''sends out the jams @ 10am PST to subs'''
     numbers = Connect.get_connection().jordansJams.numbers
     for number in numbers.find():
         send_to = number['_id']
-        getJams(send_to)
+        get_jams(send_to)
         time.sleep(1)
 
 
