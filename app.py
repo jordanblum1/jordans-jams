@@ -3,7 +3,7 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from connect import Connect
 from twilio.twiml.messaging_response import Message, MessagingResponse
-from jordansJams import verify, addSongs, getJams, clearSongs, is_subscriber, newUser, removeUser, twilioConnect, default_message
+from jordansJams import verify, addSongs, getJams, clearSongs, is_subscriber, new_user, removeUser, twilioConnect, default_message
 
 SECRET_KEY = 'a secret key'
 app = Flask(__name__)
@@ -12,51 +12,58 @@ app.config.from_object(__name__)
 mongo = Connect.get_connection()
 numbers = mongo.jordansJams.numbers
 
+
 @app.route('/')
 def index():
+    '''renders homepage'''
     return render_template('jordansJams.html')
 
-@app.route('/addFromWeb/<number>', methods = ['POST'])
-def webAdd(number):
+
+@app.route('/addFromWeb/<number>', methods=['POST'])
+def web_add(number):
+    '''adds subscriber from the web'''
     if is_subscriber(number):
-        return ("Error: Number already subscribed to Jordan's Jams")
+        return "Error: Number already subscribed to Jordan's Jams"
     else:
-        return newUser(number)
+        return new_user(number)
+
 
 @app.route('/jams', methods=['POST'])
-def sms():
 
+def sms():
+    '''used for all communications of text'''
     resp = MessagingResponse()
     number = request.form['From']
-    inboundMessage = (request.form['Body'])
+    inbound_message = (request.form['Body'])
 
     counter = session.get('counter', 0)
     counter += 1
     session['counter'] = counter
 
-    print(inboundMessage)
+    print(inbound_message)
     print(counter)
 
     exit_words = ["STOP", "END", "UNSUBSCRIBE", "REMOVE"]
-    if inboundMessage.upper() in exit_words:
+    if inbound_message.upper() in exit_words:
         return removeUser(number)
 
-    if inboundMessage == "CLEAR":
+    if inbound_message == "CLEAR":
         session['counter'] = 0
         return clearSongs(number)
-    if inboundMessage == "JAMS":
+    if inbound_message == "JAMS":
         return getJams(number)
-    if (inboundMessage == "ADD") or (counter >= 1 and "open.spotify.com" in inboundMessage.lower()):
+    if (inbound_message == "ADD") or (counter >= 1 and "open.spotify.com" in inbound_message.lower()):
         if verify(number):
-            return addSongs(number, inboundMessage, counter)
+            return addSongs(number, inbound_message, counter)
     if not is_subscriber(number):
-        return newUser(number)
+        return new_user(number)
     if is_subscriber(number):
         return default_message(number)
 
     message_body = 'Error, that is not a possible entry.'
     resp.message(message_body)
     return str(resp)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

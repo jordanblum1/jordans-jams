@@ -1,77 +1,81 @@
+'''Jams file that does all the heavy lifting'''
 import os
 import time
-from flask import Flask
-from flask_pymongo import PyMongo
-from pymongo import MongoClient
-from connect import Connect
 from twilio.twiml.messaging_response import Message, MessagingResponse
 from twilio.base import exceptions
 from twilio.rest import Client
-from trackInfo import getTrackInfo
 import spotipy
 import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
+from connect import Connect
+from trackInfo import getTrackInfo
 
 #add env vars to Heroku
-def twilioConnect():
+def twilio_connect():
+    '''twillio connect client'''
     twilioSID = os.environ['TWILIO_SID']
     twilioAuthToken = os.environ['TWILIO_AUTH']
     return Client(twilioSID, twilioAuthToken)
 
 def spotify():
+    '''spotify client connect'''
     client_credentials_manager = SpotifyClientCredentials()
     return spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 def default_message(number):
-    twilioClient = twilioConnect()
+    '''sent whenever anyone texts non-keywords'''
+    twilio_client = twilio_connect()
     message = "Thanks for being a subscriber! If you would like the current jams for the week text: \'JAMS\'"
-    twilioClient.messages.create(
+    twilio_client.messages.create(
             to=number,
             from_="+14152124859",
             body=message)
     return "200 OK -- Message sent successfully."
 
-def is_subscriber(phoneNumber):
+def is_subscriber(phone_number):
+    '''checks if number in mongo'''
     db = Connect.get_connection().jordansJams.numbers
-    if db.find_one({"_id":phoneNumber}) != None:
+    if db.find_one({"_id":phone_number}) is not None:
         return True
     return False
 
-def newUser(phoneNumber):
+def new_user(phone_number):
+    '''adds new number if not already in mongo'''
     db = Connect.get_connection()
     numbers = db.jordansJams.numbers
-    numbers.insert_one({'_id':phoneNumber})
-    twilioClient = twilioConnect()
+    numbers.insert_one({'_id':phone_number})
+    twilio_client = twilio_connect()
     welcome = "Welcome to Jordan's Jams! Here you'll find Jordan's newest tunes every week. Every Wednesday you will get the songs Jordan has been jamming out to over the past 7 days. Here is what he's been listening to this week."
-    twilioClient.messages.create(
-            to=phoneNumber,
+    twilio_client.messages.create(
+            to=phone_number,
             from_="+14152124859",
             body=welcome)
-    return getJams(phoneNumber)
+    return get_jams(phone_number)
 
-def removeUser(phoneNumber):
-    twilioClient = twilioConnect()
+def remove_user(phone_number):
+    '''method to remove a user from the subscriber list'''
+    twilio_client = twilio_connect()
     message = "Sorry to see you go! Text anything back if you would like to re-subscribe and jam on."
     db = Connect.get_connection().jordansJams.numbers
-    twilioClient.messages.create(
-            to=phoneNumber,
+    twilio_client.messages.create(
+            to=phone_number,
             from_="+14152124859",
             body=message)
-    db.delete_one({'_id': phoneNumber})
+    db.delete_one({'_id': phone_number})
 
-def getJams(phoneNumber):
-
+def get_jams(phone_number):
+    '''method to get weekly songs and send to user'''
     db = Connect.get_connection().jordansJams
-    twilioClient = twilioConnect()
+    twilio_client = twilio_connect()
 
     songs = db.songs.find()
 
-    jamCount = songs.count()
+    jam_count = songs.count()
 
-    if jamCount < 1:
+    if jam_count < 1:
         sorry = "Sorry, unfortunately jams have not been added for this week. Check back later!"
-        twilioClient.messages.create(
-            to=phoneNumber,
+        twilio_client.messages.create(
+            to=phone_number,
             from_="+14152124859",
             body=sorry)
         return "Songs requested. No available. Please add more songs"
@@ -79,8 +83,8 @@ def getJams(phoneNumber):
 
     intro = "Good morning! Jordan's top 2 jams for the week are:"
 
-    twilioClient.messages.create(
-            to=phoneNumber,
+    twilio_client.messages.create(
+            to=phone_number,
             from_="+14152124859",
             body=intro)
 
@@ -89,42 +93,41 @@ def getJams(phoneNumber):
         artist = song['artist']
         link = song['link']
         message = track + " by: " + artist 
-        twilioClient.messages.create(
-            to=phoneNumber,
+        twilio_client.messages.create(
+            to=phone_number,
             from_="+14152124859",
             body=message)
-        twilioClient.messages.create(
-            to=phoneNumber,
+        twilio_client.messages.create(
+            to=phone_number,
             from_="+14152124859",
             body=link)
         time.sleep(2)
 
     return "Songs successfully sent."
 
-def verify(requestNumber):
-    #verify if this is an Admin phone number
-    #mask this later
-    twilioClient = twilioConnect()
+def verify(request_number):
+    '''method to verify if the sending number is the admin number'''
+    twilio_client = twilio_connect()
 
-    adminNum = os.environ['ADMIN_NUM']
-	
-    if requestNumber == adminNum:
+    admin_num = os.environ['ADMIN_NUM']
+
+    if request_number == admin_num:
         return True
-    else:
-        message_body = "Sorry, you are not authorized to add songs."
-        twilioClient.messages.create(to=requestNumber, from_="+14152124859", body=message_body)
-        return False
 
-def clearSongs(requestNumber):
+    message_body = "Sorry, you are not authorized to add songs."
+    twilio_client.messages.create(to=request_number, from_="+14152124859", body=message_body)
+    return False
+
+def clear_songs(request_number):
+    '''method to clear songs from database'''
     db = Connect.get_connection()
-    numbers = db.jordansJams.numbers
     songs = db.jordansJams.songs
 
     #Create response to text back w/ twiml
     resp = MessagingResponse()
 
     #Clear all songs in database if more than 2 songs & message is 'clear'
-    if songs.count() >= 2 and verify(requestNumber):
+    if songs.count() >= 2 and verify(request_number):
         songs.remove({ })
         message_body = "All jams have been cleared."
         resp.message(message_body)
@@ -135,35 +138,36 @@ def clearSongs(requestNumber):
         return str(resp)
     
 
-def addSongs(requestNumber, requestMessage, sessionCount):
+def add_songs(request_number, request_message, session_count):
+    '''method to adds the weekly songs to the db'''
 
-    number = requestNumber
+    number = request_number
 
     db = Connect.get_connection()
-    numbers = db.jordansJams.numbers
     songs = db.jordansJams.songs
 
     #Create response to text back w/ twiml
     resp = MessagingResponse()
-    justSent = False
+    just_sent = False
 
     #check if song already exists in database
-    if "open.spotify.com" in requestMessage:
-        track = getTrackInfo(requestMessage)
-        if songs.find_one({"uri":track['uri']}) != None:
+    if "open.spotify.com" in request_message:
+        track = getTrackInfo(request_message)
+        if songs.find_one({"uri":track['uri']}) is not None:
             message_body = "That song has already been added. Please add another."
             resp.message(message_body)
             return str(resp)
-        
+                 
     #add song to database
-    if "open.spotify.com" in requestMessage and sessionCount >= 1:
-        parsedTrack = getTrackInfo(requestMessage)
-        songs.insert_one(parsedTrack)
+    if "open.spotify.com" in request_message and session_count >= 1:
+        parsed_track = getTrackInfo(request_message)
+        songs.insert_one(parsed_track)
+        uri = parsed_track['uri']
         sp = spotify()
-        sp.user_playlist_add_tracks('1226013786', playlist_id='6MfEs3eSEY27X5QOzioqW8', tracks="spotify:track:{0}".format(parsedTrack['uri']))
-        justSent = True
+        sp.user_playlist_add_tracks('1226013786', playlist_id='6MfEs3eSEY27X5QOzioqW8', tracks=f'spotify:track:{uri}')
+        just_sent = True
 
-    if sessionCount >= 1 and verify(number):
+    if session_count >= 1 and verify(number):
         if songs.count() == 0:
             message_body = "Please send in your 2 songs for the week."
             resp.message(message_body)
@@ -172,9 +176,9 @@ def addSongs(requestNumber, requestMessage, sessionCount):
             message_body = "Please send in your 2nd song."
             resp.message(message_body)
             return str(resp)
-        elif songs.count() == 2 and verify(number) and justSent:
+        elif songs.count() == 2 and verify(number) and just_sent:
             message_body = "Thanks for sending in your weekly songs!"
-            justSent = False
+            just_sent = False
             resp.message(message_body)
             return str(resp)
         else:
@@ -185,10 +189,11 @@ def addSongs(requestNumber, requestMessage, sessionCount):
     resp.message("Error adding weekly songs. Please check for maintenance.")
     return str(resp)
 
-def notifyJordan():
+def notify_jordan():
+    '''sends message to jordan for weekly jams'''
     print("Notifying Jordan -- Weekly Jams request should be sent shortly.")
-    twilioClient = twilioConnect()
-    adminNum = os.environ['ADMIN_NUM']
+    twilio_client = twilio_connect()
+    admin_num = os.environ['ADMIN_NUM']
     message_body = "Hey Jordan! It's time to submit your weekly jams."
-    twilioClient.messages.create(to=adminNum, from_="+14152124859", body=message_body)
-    clearSongs(adminNum)
+    twilio_client.messages.create(to=admin_num, from_="+14152124859", body=message_body)
+    clear_songs(admin_num)
