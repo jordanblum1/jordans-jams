@@ -1,11 +1,9 @@
 '''Jams file that does all the heavy lifting'''
 import os
 import time
-from twilio.twiml.messaging_response import Message, MessagingResponse
-from twilio.base import exceptions
+from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 import spotipy
-import spotipy.util as util
 from spotipy.oauth2 import SpotifyClientCredentials
 from connect import Connect
 from trackInfo import getTrackInfo

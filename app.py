@@ -1,12 +1,8 @@
-from os import remove
 from flask import Flask, request, session, render_template
-from flask_pymongo import PyMongo
-from pymongo import MongoClient
 from connect import Connect
-from twilio.twiml.messaging_response import Message, MessagingResponse
-from jordansJams import verify, add_songs, get_jams, clear_songs, is_subscriber, new_user, remove_user, twilio_connect, default_message
+from twilio.twiml.messaging_response import MessagingResponse
+from jordansJams import verify, add_songs, get_jams, clear_songs, is_subscriber, new_user, remove_user, default_message
 
-SECRET_KEY = 'a secret key'
 app = Flask(__name__)
 app.config.from_object(__name__)
 
