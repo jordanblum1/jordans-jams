@@ -2,3 +2,4 @@
 ngrok
 .venv
 .vercel
+.env
