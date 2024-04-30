@@ -7,4 +7,4 @@ class Connect(object):
         user = os.environ['MDB_USERNAME']
         password = os.environ['MDB_PASSWORD']
         mongoLink = os.environ['MDB_LINK']
-        return MongoClient("mongodb+srv://"+user+":"+password+"@"+mongoLink)
+        return MongoClient("mongodb://"+user+":"+password+"@"+mongoLink)
