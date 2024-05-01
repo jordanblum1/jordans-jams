@@ -1,9 +1,11 @@
+import os
 from flask import Flask, request, session, render_template
 from connect import Connect
 from twilio.twiml.messaging_response import MessagingResponse
 from jordansJams import verify, add_songs, get_jams, clear_songs, is_subscriber, new_user, remove_user, default_message
 
 app = Flask(__name__)
+app.secret_key = os.environ['SECRET_KEY']
 app.config.from_object(__name__)
 
 mongo = Connect.get_connection()
