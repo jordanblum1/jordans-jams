@@ -1,12 +1,16 @@
 '''Jams file that does all the heavy lifting'''
 import os
 import time
+import logging
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from connect import Connect
 from trackInfo import getTrackInfo
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 #add env vars to Heroku
 def twilio_connect():
@@ -22,6 +26,7 @@ def spotify():
 
 def default_message(number):
     '''sent whenever anyone texts non-keywords'''
+    logging.debug("Sending default message")
     twilio_client = twilio_connect()
     message = "Thanks for being a subscriber! If you would like the current jams for the week text: \'JAMS\'"
     twilio_client.messages.create(
@@ -32,6 +37,7 @@ def default_message(number):
 
 def is_subscriber(phone_number):
     '''checks if number in mongo'''
+    logging.debug("Checking if number is a subscriber")
     db = Connect.get_connection().jordansJams.numbers
     if db.find_one({"_id":phone_number}) is not None:
         return True
@@ -39,6 +45,7 @@ def is_subscriber(phone_number):
 
 def new_user(phone_number):
     '''adds new number if not already in mongo'''
+    logging.debug("Adding new user")
     db = Connect.get_connection()
     numbers = db.jordansJams.numbers
     numbers.insert_one({'_id':phone_number})
@@ -52,6 +59,7 @@ def new_user(phone_number):
 
 def remove_user(phone_number):
     '''method to remove a user from the subscriber list'''
+    logging.debug("Removing user")
     twilio_client = twilio_connect()
     message = "Sorry to see you go! Text anything back if you would like to re-subscribe and jam on."
     db = Connect.get_connection().jordansJams.numbers
@@ -63,6 +71,7 @@ def remove_user(phone_number):
 
 def get_jams(phone_number):
     '''method to get weekly songs and send to user'''
+    logging.debug("Getting weekly songs")
     db = Connect.get_connection().jordansJams
     twilio_client = twilio_connect()
 
@@ -78,9 +87,7 @@ def get_jams(phone_number):
             body=sorry)
         return "Songs requested. No available. Please add more songs"
 
-
     intro = "Good morning! Jordan's top 2 jams for the week are:"
-
     twilio_client.messages.create(
             to=phone_number,
             from_="+14152124859",
@@ -105,6 +112,7 @@ def get_jams(phone_number):
 
 def verify(request_number):
     '''method to verify if the sending number is the admin number'''
+    logging.debug("Verifying request number")
     twilio_client = twilio_connect()
 
     admin_num = os.environ['ADMIN_NUM']
@@ -118,6 +126,7 @@ def verify(request_number):
 
 def clear_songs(request_number):
     '''method to clear songs from database'''
+    logging.debug("Clearing songs")
     db = Connect.get_connection()
     songs = db.jordansJams.songs
 
@@ -138,7 +147,7 @@ def clear_songs(request_number):
 
 def add_songs(request_number, request_message, session_count):
     '''method to adds the weekly songs to the db'''
-
+    logging.debug("Adding weekly songs")
     number = request_number
 
     db = Connect.get_connection()
@@ -188,6 +197,7 @@ def add_songs(request_number, request_message, session_count):
 
 def notify_jordan():
     '''sends message to jordan for weekly jams'''
+    logging.debug("Notifying Jordan")
     print("Notifying Jordan -- Weekly Jams request should be sent shortly.")
     twilio_client = twilio_connect()
     admin_num = os.environ['ADMIN_NUM']

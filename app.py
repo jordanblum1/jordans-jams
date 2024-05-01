@@ -9,6 +9,9 @@ app = Flask(__name__)
 app.secret_key = os.environ['SECRET_KEY']
 app.config.from_object(__name__)
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
 mongo = Connect.get_connection()
 numbers = mongo.jordansJams.numbers
 
